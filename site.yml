@@ -1,0 +1,29 @@
+---
+- hosts: simonrw.com
+  become: yes
+  tasks:
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: present
+      notify:
+        - Restart nginx
+
+    - name: Allow http through the firewall
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+
+    - name: Copy index page
+      template:
+        src: index.html
+        dest: /usr/share/nginx/html/index.html
+        owner: root
+        group: root
+
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
